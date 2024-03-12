@@ -73,14 +73,17 @@ class Graph:
         plt.show()
 
     def draw_incremental(self):
-        plt.ion()  # Turn on interactive mode
-        plt.figure(figsize=(5,5))
+        fig, ax = plt.subplots(figsize=(5,5))
+        
         # Draw initial points without edges
         for point in self.points:
-            plt.plot(point.x, point.y, 'bo')
-        plt.xlabel("X")
-        plt.ylabel("Y")
-        plt.title("Graph of Points with Weighted Edges")
+            ax.plot(point.x, point.y, 'bo')
+        
+        ax.set_xlabel("X")
+        ax.set_ylabel("Y")
+        ax.set_title("Graph of Points with Weighted Edges")
+
+        plt.show(block=False)
 
         for edge in self.edges:
             p1, p2, weight = edge  # Unpack the edge tuple, now including weight
@@ -88,14 +91,15 @@ class Graph:
             midpoint_x = (p1.x + p2.x) / 2
             midpoint_y = (p1.y + p2.y) / 2
             # Draw each edge
-            plt.plot([p1.x, p2.x], [p1.y, p2.y], 'k-')
+            ax.plot([p1.x, p2.x], [p1.y, p2.y], 'k-')
             # Place the weight text near the midpoint of the edge
-            plt.text(midpoint_x, midpoint_y, str(weight), color='red', fontsize=9)
-            plt.draw()
-            plt.pause(WAIT_TIME)  # Pause to make the drawing of each edge visible
+            ax.text(midpoint_x, midpoint_y, str(weight), color='red', fontsize=9)
+            
+            fig.canvas.draw()
+            fig.canvas.flush_events()
+            time.sleep(WAIT_TIME)  # Pause to make the drawing of each edge visible
 
-        plt.ioff()  # Turn off interactive mode
-        plt.show()  # Keep the window open until manually closed
+        plt.show()
 
 
 
