@@ -28,13 +28,15 @@ class Test_Graph(unittest.TestCase):
         g2 = Graph(4)
         assert len(g1.points) == len(g2.points)
 
-    def test_connections(self):
+    def test_weighted_connections(self):
         p = [Point(1,5), Point(35, 67), Point(123, 36), Point(90, 150)]
         g = Graph(len(p), p)
-        g.points[0].connect(g.points[1])
+        g.connect(g.points[0], g.points[1], 10)
         assert len(g.edges) == 1
-        g.points[0].connect(g.points[1])
+        assert g.edges[0][2] == 10
+        g.connect(g.points[1], g.points[2], 12)
         assert len(g.edges) == 1
+        assert g.edges[1][2] == 12
 
 
 class TestConnectedGraph(unittest.TestCase):
