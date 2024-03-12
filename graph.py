@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import time
 
 SIZE = 10 # size is the number of vertices in the graph
-WAIT_TIME = 5 # wait time is the time between adding each edge for visualizations in seconds
+WAIT_TIME = 10 # wait time is the time between adding each edge for visualizations in seconds
 
 class Point:
     """Points have (x,y) coordinates and can calculate distance between each other
@@ -35,6 +35,7 @@ class Graph:
     def __init__(self, size: int, format: list[Point]=[]):
         self.size = size
         self.points = []
+        # edges are stored as (point1, point2, weight)
         self.edges = []
         # Generate a graph depending on if there are present points or not
         self.generate_from_list(format) if format else self.generate_points()
@@ -51,10 +52,11 @@ class Graph:
         for point in format:
             self.points.append(point)
 
-    def connect(self, p1: Point, p2: Point):
+    def connect(self, p1: Point, p2: Point, weight: int):
         assert p1 in self.points and p2 in self.points, "Both points must be in the graph"
         assert (p1, p2) not in self.edges and (p2, p1) not in self.edges, "Edge already exists"
-        self.edges.append((p1, p2))
+        assert weight != 0
+        self.edges.append((p1, p2, weight))
 
     def draw(self):
         plt.figure(figsize=(5,5))
@@ -71,15 +73,30 @@ class Graph:
         plt.show()
 
     def draw_incremental(self):
-        plt.ion()
-        self.draw_points()
+        plt.ion()  # Turn on interactive mode
+        plt.figure(figsize=(5,5))
+        # Draw initial points without edges
+        for point in self.points:
+            plt.plot(point.x, point.y, 'bo')
+        plt.xlabel("X")
+        plt.ylabel("Y")
+        plt.title("Graph of Points with Weighted Edges")
+
         for edge in self.edges:
-            p1, p2 = edge
+            p1, p2, weight = edge  # Unpack the edge tuple, now including weight
+            # Calculate the midpoint of the edge for text placement
+            midpoint_x = (p1.x + p2.x) / 2
+            midpoint_y = (p1.y + p2.y) / 2
+            # Draw each edge
             plt.plot([p1.x, p2.x], [p1.y, p2.y], 'k-')
+            # Place the weight text near the midpoint of the edge
+            plt.text(midpoint_x, midpoint_y, str(weight), color='red', fontsize=9)
             plt.draw()
-            plt.pause(WAIT_TIME)
-        plt.ioff()
-        plt.show()
+            plt.pause(WAIT_TIME)  # Pause to make the drawing of each edge visible
+
+        plt.ioff()  # Turn off interactive mode
+        plt.show()  # Keep the window open until manually closed
+
 
 
     def draw_points(self):
@@ -93,7 +110,10 @@ class Graph:
 
     def draw_edges(self):
         for edge in self.edges:
-            p1, p2 = edge
+            p1, p2, weight = edge
+            midpoint_x = (p1.x + p2.x) / 2
+            midpoint_y = (p1.y + p2.y) / 2
+            plt.text(midpoint_x, midpoint_y, str(weight), color='red', fontsize=9)
             plt.plot([p1.x, p2.x], [p1.y, p2.y], 'k-')
 
         
@@ -120,9 +140,9 @@ if __name__ == "__main__":
     # g.draw_points()
     p1 = g.points[0]
     p2 = g.points[1]
-    g.connect(p1, p2)
-    g.connect(g.points[2], g.points[3])
-    g.connect(g.points[4], g.points[5])
-    g.connect(g.points[5], g.points[6])
+    g.connect(p1, p2, 4)
+    g.connect(g.points[2], g.points[3], 2)
+    g.connect(g.points[4], g.points[5], 7)
+    g.connect(g.points[5], g.points[6], 10)
     g.draw_incremental()
     print("Graph executed")
