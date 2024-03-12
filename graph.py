@@ -131,9 +131,10 @@ class ConnectedGraph(Graph):
         self.connect_all()
     
     def connect_all(self):
-        pass
+        for i in range(self.size):
+            for a in range(i, self.size):
+                self.connect(self.edges[i], self.edges[a], 1)
     
-
 
 
 
