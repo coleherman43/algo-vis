@@ -11,7 +11,7 @@ def prims_algo(g: ConnectedGraph):
     # list of edges in (p1, p2, weight) form in order of adding. Will become path to return
     path: list[tuple[Point,Point, int]] = []
     # point to start with FIXME have to find minimum weight edge
-        
+    low = find_lowest_weight(g)
     while len(vertices) < g.size:
         pass
     return path
