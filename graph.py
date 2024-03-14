@@ -5,8 +5,13 @@ from random import randint
 import matplotlib.pyplot as plt
 import time
 
+import logging
+logging.basicConfig()
+log = logging.getLogger(__name__)
+log.setLevel(logging.INFO)
+
 SIZE = 10 # size is the number of vertices in the graph
-WAIT_TIME = 10 # wait time is the time between adding each edge for visualizations in seconds
+WAIT_TIME = 4 # wait time is the time between adding each edge for visualizations in seconds
 
 class Point:
     """Points have (x,y) coordinates and can calculate distance between each other
@@ -27,16 +32,17 @@ class Point:
 
 
 class Graph:
-    """Graphs have a size, which is the # of random (or specified) points within it
+    """Graphs have a size, which is the # of random (or specified) points within it,
+    have optional format and weights for manual input of graphs
     Wrapper for list of Points
     Ex. Graph(10) makes a graph with 10 random points
     """
 
     def __init__(self, size: int, format: list[Point]=[]):
         self.size = size
-        self.points = []
+        self.points: list[Point] = []
         # edges are stored as (point1, point2, weight)
-        self.edges = []
+        self.edges: list[tuple[Point, Point, float]] = []
         # Generate a graph depending on if there are present points or not
         self.generate_from_list(format) if format else self.generate_points()
 
@@ -52,10 +58,10 @@ class Graph:
         for point in format:
             self.points.append(point)
 
-    def connect(self, p1: Point, p2: Point, weight: int):
+    def connect(self, p1: Point, p2: Point, weight: float):
         assert p1 in self.points and p2 in self.points, "Both points must be in the graph"
-        assert (p1, p2) not in self.edges and (p2, p1) not in self.edges, "Edge already exists"
-        assert weight != 0
+        assert (p1, p2, weight) not in self.edges and (p2, p1, weight) not in self.edges, "Edge already exists"
+        assert weight != 0, "Weight can't be 0"
         self.edges.append((p1, p2, weight))
 
     def draw(self):
@@ -65,7 +71,7 @@ class Graph:
             plt.plot(point.x, point.y, 'bo')
         # Draw edges
         for edge in self.edges:
-            p1, p2 = edge
+            p1, p2, weight = edge
             plt.plot([p1.x, p2.x], [p1.y, p2.y], 'k-')
         plt.xlabel("X")
         plt.ylabel("Y")
@@ -86,7 +92,7 @@ class Graph:
         plt.show(block=False)
 
         for edge in self.edges:
-            p1, p2, weight = edge  # Unpack the edge tuple, now including weight
+            p1, p2, weight = edge  # Unpack the edge tuple
             # Calculate the midpoint of the edge for text placement
             midpoint_x = (p1.x + p2.x) / 2
             midpoint_y = (p1.y + p2.y) / 2
@@ -96,12 +102,11 @@ class Graph:
             ax.text(midpoint_x, midpoint_y, str(weight), color='red', fontsize=9)
             
             fig.canvas.draw()
-            fig.canvas.flush_events()
             time.sleep(WAIT_TIME)  # Pause to make the drawing of each edge visible
+            fig.canvas.flush_events()
+            
 
         plt.show()
-
-
 
     def draw_points(self):
         plt.figure(figsize=(5,5))
@@ -120,20 +125,35 @@ class Graph:
             plt.text(midpoint_x, midpoint_y, str(weight), color='red', fontsize=9)
             plt.plot([p1.x, p2.x], [p1.y, p2.y], 'k-')
 
-        
 
 class ConnectedGraph(Graph):
     """Connected graphs are graphs wheere there are edges between vertices (complete by default)
     """
 
-    def __init__(self, size: int):
+    def __init__(self, size: int, format: list[Point]=[]):
+        # make self.size, self.points, 
         super().__init__(size)
-        self.connect_all()
+        log.debug(f"Edges: {self.edges}")
+        # if a format is specified, create given connected graph. Else randomly generate
+        self.generate_from_list(format) if format else self.generate_points(size)
+        self._connect_all()
+        log.debug(f"Edges: {self.edges}")
     
-    def connect_all(self):
+    def _connect_all(self):
         for i in range(self.size):
-            for a in range(i, self.size):
-                self.connect(self.edges[i], self.edges[a], 1)
+            for a in range(i+1, self.size):
+                point1 = self.points[i]
+                point2 = self.points[a]
+                assert point1 is not point2
+                dist = point1.distance_to(point2)
+                self.connect(point1, point2, dist)
+
+
+
+
+
+
+    
     
 
 

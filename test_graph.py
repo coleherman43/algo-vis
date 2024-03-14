@@ -40,8 +40,8 @@ class Test_Graph(unittest.TestCase):
 
 
 class TestConnectedGraph(unittest.TestCase):
-    """"""
-
+    """Connected graphs have a specified size (number of points)
+    Every point is connected to every other point"""
     def test_connections(self):
         # Prob can calculate number, should just be (n-1)! or something
         size = 5
