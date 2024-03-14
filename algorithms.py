@@ -17,8 +17,9 @@ def prims_algo(g: ConnectedGraph):
     return path
 
 
-def find_lowest_weight(g: Graph) -> tuple[Point, Point, int]:
+def find_lowest_weight(g: Graph) -> tuple[Point, Point, float]:
     """Given a Graph or ConnectedGraph, find the lowest weight edge"""
+    # FIXME could do this in one line (and faster) with a sort and lambda key function
     low = g.edges[0][2]
     res = g.edges[0]
     for edge in g.edges:
