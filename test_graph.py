@@ -45,7 +45,7 @@ class TestConnectedGraph(unittest.TestCase):
     def test_connections(self):
         # Prob can calculate number, should just be (n-1)! or something
         size = 5
-        g = ConnectedGraph(5)
+        g = ConnectedGraph(size)
         assert len(g.edges) == size * (size-1) / 2
 
 
