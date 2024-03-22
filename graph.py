@@ -135,7 +135,7 @@ class ConnectedGraph(Graph):
         super().__init__(size)
         log.debug(f"Edges: {self.edges}")
         # if a format is specified, create given connected graph. Else randomly generate
-        self.generate_from_list(format) if format else self.generate_points(size)
+        # self.generate_from_list(format) if format else self.generate_points(size)
         self._connect_all()
         log.debug(f"Edges: {self.edges}")
     

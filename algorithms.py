@@ -1,6 +1,11 @@
 from graph import *
 import math
 
+import logging
+logging.basicConfig()
+log = logging.getLogger(__name__)
+log.setLevel(logging.INFO)
+
 def prims_algo(g: ConnectedGraph):
     """pick lowestweight edge, then loop through neighbors and choose
     lowest weight edge to unkown vertex, repeat"""
@@ -11,22 +16,16 @@ def prims_algo(g: ConnectedGraph):
     # list of edges in (p1, p2, weight) form in order of adding. Will become path to return
     path: list[tuple[Point,Point, int]] = []
     # point to start with FIXME have to find minimum weight edge
-    low = find_lowest_weight(g)
+    low = find_lowest_weight_edge(g)
     while len(vertices) < g.size:
         pass
     return path
 
 
-def find_lowest_weight(g: Graph) -> tuple[Point, Point, float]:
+def find_lowest_weight_edge(g: Graph) -> tuple[Point, Point, float]:
     """Given a Graph or ConnectedGraph, find the lowest weight edge"""
-    # FIXME could do this in one line (and faster) with a sort and lambda key function
-    low = g.edges[0][2]
-    res = g.edges[0]
-    for edge in g.edges:
-        if edge[2] < low:
-            res = edge
-            low = edge[2]
-    return res
+    ordered = sorted(g.edges, key=lambda edge: edge[2])
+    return ordered[0]
 
             
         
